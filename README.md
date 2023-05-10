@@ -1,5 +1,7 @@
 # Problems in the Python C API
 
+This workgroup was set up following the recent Language Summit discussions about the C API.
+
 The purpose here is to identify the problems in the current C API, and to determine which of them can be fixed incrementally.
 Please create an issue in the repo for each problem you identify, and that particular issue can be discussed there.
 
