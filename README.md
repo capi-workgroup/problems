@@ -1,4 +1,4 @@
-# Problems in the C API
+# Problems in the Python C API
 
 The purpose here is to identify the problems in the current C API, and to determine which of them can be fixed incrementally.
 Please create an issue in the repo for each problem you identify, and that particular issue can be discussed there.
