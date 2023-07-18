@@ -41,6 +41,64 @@ problem with the C API. They are categorized and a number of recurring themes
 were identified. The sections below correspond to these themes, and each
 contains a combined description of the issues raised in that category.
 
+Error Handling
+==============
+
+Error handling in the C API is based on the error indicator which is stored
+on the thread state (in global scope). The design intention was that each
+API function returns a value indicating whether an error has occurred (by
+convention, ``-1`` or ``NULL``). When the program know that an error occurred,
+it can fetch the exception object which is stored in the error indicator.
+A number of problems were identified which are related to error handling,
+pointing at APIs which are too easy to use incorrectly.
+
+Functions that Suppress Errors
+------------------------------
+There are functions that do not report all errors that occur while they
+execute. For example, ``PyDict_GetItem`` clears any errors that occur
+when it calls the key's hash function, or while performing a lookup
+in the dictionary.
+(See `Issue 51 <https://github.com/capi-workgroup/problems/issues/51>`__)
+
+Functions Called with Error Indicator Set
+-----------------------------------------
+Python code never executes with an in-flight exception (by definition),
+and by the same token C API functions should never be called with the error
+indicator set. This is currently not checked in most C API functions, and
+there are places in the interpreter where error handling code calls a C API
+function while an exception is set. For example, see the call to
+``PyUnicode_FromString`` in the error handler of ``_PyErr_WriteUnraisableMsg``.
+(See `Issue 2 <https://github.com/capi-workgroup/problems/issues/2>`__).
+
+Missing or Ambiguous Return Values
+----------------------------------
+There are functions that do not return a value, so a caller is forced to
+query the error indicator in order to identify whether an error has occurred.
+An example is ``PyBuffer_Release``.
+(See `Issue 20 <https://github.com/capi-workgroup/problems/issues/20>`__)
+
+There are other functions which do have a return value, but this return value
+does not unambiguously indicate whether an error has occurred. For example,
+``PyLong_AsLong`` returns ``-1`` in case of error, or when the value of the
+argument is indeed ``-1``.
+(See `Issue 1 <https://github.com/capi-workgroup/problems/issues/1>`__)
+
+This is error prone because it is possible that the error indicator was already
+set before the function was called, and the error is incorrectly attributed.
+The fact that the error was not detected before the call is a bug in the
+calling code, but the behaviour of the program in this case doesn't make it
+easy to identify and debug the problem.
+
+``NULL`` as a Valid ``PyObject*`` Argument Value
+------------------------------------------------
+There are functions that take a ``PyObject*`` argument, with special meaning
+when it is ``NULL``. For example, if ``PyObject_SetAttr`` receives ``NULL`` as
+the value to set, this mean that the attribute should be cleared. This is error
+prone because it could be that ``NULL`` indicates an error in the construction
+of the value, and the program failed to check for this error. The program will
+misinterpret the ``NULL`` to mean something different than error.
+(See `Issue 47 <https://github.com/capi-workgroup/problems/issues/47>`__).
+
 
 API Evolution and Maintenance
 =============================
@@ -61,14 +119,14 @@ this is not a problem to be solved, but rather a feature of any API. In this
 view, API evolution should not be incremental, but rather through large
 redesigns, each of which learns from the mistakes of the past. The new API can
 be designed to the best of our understanding at the time, without the shackles
-of backwards compatibility requirements. Between these two extremes are
-solutions that allow incremental resolution of minor and localized problems,
-but reserves large changes to larger API redesigns.
+of backwards compatibility requirements. A realistic approach will be somewhere
+between these two extremes, fixing issues which are easy or important enough
+to tackle incrementally, and leaving others alone.
 
 The problem we have in CPython is that we don't have an agreed, official
-approach of the project. Different members of the core team are pulling in
-different direction and this is an ongoing source of disagreements and tension
-in the team. A new C API needs to come with a clear decision about the model
+approach to API evolution. Different members of the core team are pulling in
+different directions and this is an ongoing source of disagreements and
+tension. A new C API needs to come with a clear decision about the model
 that its maintenance will follow, as well as the technical and organizational
 processes by which this will work.
 
