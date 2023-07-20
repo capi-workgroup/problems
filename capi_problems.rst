@@ -29,12 +29,15 @@ requirements. The tradeoff between stability and progress is an ongoing, highly
 contentious topic of discussion. Several proposals have been put forwards for
 improvements, redesign or replacement of the C API, representing deep
 analyses of the problems. At the 2023 Language Summit, three back-to-back
-sessions were devoted to various aspects of the C API. The conclusion of the
-discussions there was that we don't have a common understanding of the problems
-we are trying to solve. It was decided that we need to agree on the current
-problems with the C API, before we are able to evaluate any of the proposed
-solutions. This document aims to do just that, by summarizing the contributions
-that various people submitted to the
+sessions were devoted to various aspects of the C API. There is general agreement
+that a new C API design can remedy problems that the C API has accumulated over
+the last 30 years, while updating it for use cases that it was not designed for.
+However, there was a sense that we are trying to discuss solutions without
+a clear understanding of the problems that we are trying to solve. It was
+decided that we need to agree on the current problems with the C API, before
+we are able to evaluate any of the proposed solutions. This document aims to
+do just that, by summarizing the contributions that various people submitted
+to the
 [`capi-workgroup <https://github.com/capi-workgroup/problems/issues/>`__]
 repository on GitHub in the aftermath of the language summit.
 
