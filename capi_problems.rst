@@ -47,6 +47,35 @@ themes were identified. The sections below correspond to these themes,
 and each contains a combined description of the issues raised in that
 category, along with links to the individual issues.
 
+API Evolution and Maintenance
+=============================
+
+The difficulty of making changes in the C API is central to this report. It is
+implicit in many of the issues we discuss here, particularly when we need to
+decide whether an incremental bugfix can resolve the issue, or whether it can
+only be resolved as part of an API redesign
+[`Issue 44 <https://github.com/capi-workgroup/problems/issues/44>`__]. The
+benefit of each incremental change is often viewed as too small to justify the
+disruption. Over time, this implies that every mistake we make in an API's
+design or implementation remains with us indefinitely.
+
+We can take two views on this issue. One is that this is a problem and the
+solution needs to be baked into any new C API we design, in the form of a
+process for incremental API evolution. The other possible approach is that
+this is not a problem to be solved, but rather a feature of any API. In this
+view, API evolution should not be incremental, but rather through large
+redesigns, each of which learns from the mistakes of the past. The new API can
+be designed to the best of our understanding at the time, without the shackles
+of backwards compatibility requirements. A realistic approach will be somewhere
+between these two extremes, fixing issues which are easy or important enough
+to tackle incrementally, and leaving others alone.
+
+The problem we have in CPython is that we don't have an agreed, official
+approach to API evolution. Different members of the core team are pulling in
+different directions and this is an ongoing source of disagreements and
+tension. A new C API needs to come with a clear decision about the model
+that its maintenance will follow, as well as the technical and organizational
+processes by which this will work.
 
 API Specification and Abstraction
 =================================
@@ -133,7 +162,7 @@ Error Handling
 Error handling in the C API is based on the error indicator which is stored
 on the thread state (in global scope). The design intention was that each
 API function returns a value indicating whether an error has occurred (by
-convention, ``-1`` or ``NULL``). When the program know that an error occurred,
+convention, ``-1`` or ``NULL``). When the program knows that an error occurred,
 it can fetch the exception object which is stored in the error indicator.
 A number of problems were identified which are related to error handling,
 pointing at APIs which are too easy to use incorrectly.
@@ -236,34 +265,4 @@ be able to group them into their own tiers - the "fast API" tier and
 the "safe API" tier
 [`Issue 61 <https://github.com/capi-workgroup/problems/issues/61>`__].
 
-
-API Evolution and Maintenance
-=============================
-
-The difficulty of making changes in the C API is central to this report. It is
-implicit in many of the issues we discuss here, particularly when we need to
-decide whether an incremental bugfix can resolve the issue, or whether it can
-only be resolved as part of an API redesign
-[`Issue 44 <https://github.com/capi-workgroup/problems/issues/44>`__]. The
-benefit of each incremental change is often viewed as too small to justify the
-disruption. Over time, this implies that every mistake we make in an API's
-design or implementation remains with us indefinitely.
-
-We can take two views on this issue. One is that this is a problem and the
-solution needs to be baked into any new C API we design, in the form of a
-process for incremental API evolution. The other possible approach is that
-this is not a problem to be solved, but rather a feature of any API. In this
-view, API evolution should not be incremental, but rather through large
-redesigns, each of which learns from the mistakes of the past. The new API can
-be designed to the best of our understanding at the time, without the shackles
-of backwards compatibility requirements. A realistic approach will be somewhere
-between these two extremes, fixing issues which are easy or important enough
-to tackle incrementally, and leaving others alone.
-
-The problem we have in CPython is that we don't have an agreed, official
-approach to API evolution. Different members of the core team are pulling in
-different directions and this is an ongoing source of disagreements and
-tension. A new C API needs to come with a clear decision about the model
-that its maintenance will follow, as well as the technical and organizational
-processes by which this will work.
 
