@@ -186,6 +186,57 @@ misinterpret the ``NULL`` to mean something different than error
 [`Issue 47 <https://github.com/capi-workgroup/problems/issues/47>`__].
 
 
+API Tiers and Stability Guarantees
+==================================
+
+The different API tiers provide different tradeoffs of stability vs
+performance or API evolution.
+
+The stable ABI was identified as an area that needs to be looked into. At
+the moment it is incomplete and not widely adopted. At the same time, its
+existance is making it hard to make changes to some implementation
+details, because it exposes struct fields such as ``ob_refcnt``,
+``ob_type`` and ``ob_size``. There was some discussion about whether
+the stable ABI is worth keeping. Arguments on both sides can be
+found in `Issue 4 <https://github.com/capi-workgroup/problems/issues/4>`__
+and `Issue 9 <https://github.com/capi-workgroup/problems/issues/9>`__].
+
+Alternatively, it was suggested that in order to be able to evolve
+the stable ABI, we need a mechanism to support
+multiple versions of it in the same Python binary. It was pointed out
+the versioning individual functions within a single ABI version is not
+enough because it may be necessary to evolve, together, a group of
+functions that interoperate with each other
+[`Issue 39 <https://github.com/capi-workgroup/problems/issues/39>`__].
+
+The limited API was introduced in 3.2 as a blessed subset of the C API
+which is recommended for users who would like to restrict themselves
+to high quality APIs which are not likely to change often. The
+``Py_LIMITED_API`` flag allows users to restrict their program to older
+versions of the limited API, but we now need the opposite option, to
+exclude older versions. This would make it possible to evolve the
+limited API by replacing flawed elements in them.
+[`Issue 54 <https://github.com/capi-workgroup/problems/issues/54>`__].
+More generally, in a redesign we should revisit the way that API
+tiers are specified and consider designing a method that will unify the
+way we select between the different tiers
+[`Issue 59 <https://github.com/capi-workgroup/problems/issues/59>`__].
+
+API elements whose names begin with an underscore are considered
+private, an API tier with no stability guarantees. However, this was
+only clarified recently, in
+`PEP 689 <https://peps.python.org/pep-0689/>`__. It is not clear
+what the change policy should be with respect to such API elements
+that predate PEP 689
+[`Issue 58 <https://github.com/capi-workgroup/problems/issues/58>`__].
+
+There are API functions which have a fast version and a safe version
+(like ``PyTuple_GET_ITEM`` vs ``PyTuple_GetItem``). It would help to
+be able to group them into their own tiers - the "fast API" tier and
+the "safe API" tier
+[`Issue 61 <https://github.com/capi-workgroup/problems/issues/61>`__].
+
+
 API Evolution and Maintenance
 =============================
 
