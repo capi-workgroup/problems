@@ -85,14 +85,46 @@ Another set of problems arises from the fact that a PyObject* is
 exposed in the C API as an actual pointer rather than a handle. The
 address of an object serves as its ID and is used for comparison,
 and this complicates matters for alternative Python implementations
-that move objects during GC 
+that move objects during GC
 [`Issue 37 <https://github.com/capi-workgroup/problems/issues/37>`__].
 
+A separate issue is that object references are opaque to the runtime,
+discoverable only through calls to ``tp_traverse``/``tp_clear``,
+which have their own purposes. If there was a way for the runtime to
+know the structure of the object graph, and keep up with changes in it,
+this would make it possible for alternative implementations to implement
+different memory management schemes
+[`Issue 33 <https://github.com/capi-workgroup/problems/issues/33>`__].
 
-Object References
-=================
 
-The API's 
+Object Reference Management
+===========================
+
+There are C API functions that return borrowed references, and
+functions that steal references to arguments, but there isn't a
+naming convention that makes this obvious, so this is error prone
+[`Issue 8 <https://github.com/capi-workgroup/problems/issues/8>`__].
+The terminology used to describe these situations in the documentation
+can also be improved
+[`Issue 11 <https://github.com/capi-workgroup/problems/issues/11>`__].
+
+A more radical change is necessary in the case of functions that
+return borrowed references
+[`Issue 5 <https://github.com/capi-workgroup/problems/issues/5>`__ and
+`Issue 21 <https://github.com/capi-workgroup/problems/issues/21>`__]
+or pointers to parts of the internal structure of an object
+[`Issue 57 <https://github.com/capi-workgroup/problems/issues/57>`__],
+such as ``PyBytes_AsString``.  In both cases, the reference/pointer
+is valid for as long as the owning object is alive, but this time is
+hard to reason about. Such functions should not exist in the API
+without a mechanism that can make them safe.
+
+For containers, the API is currently missing bulk operations on the
+references of contained objects. This is particularly important for
+a stable ABI where ``INCREF`` and ``DECREF`` cannot be macros, making
+bulk operations expensive when implemented as a sequence of function
+calls
+[`Issue 15 <https://github.com/capi-workgroup/problems/issues/15>`__].
 
 
 Error Handling
