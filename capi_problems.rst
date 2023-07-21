@@ -132,7 +132,6 @@ this would make it possible for alternative implementations to implement
 different memory management schemes
 [`Issue 33 <https://github.com/capi-workgroup/problems/issues/33>`__].
 
-
 Object Reference Management
 ===========================
 
@@ -179,7 +178,7 @@ pointing at APIs which are too easy to use incorrectly.
 There are functions that do not report all errors that occur while they
 execute. For example, ``PyDict_GetItem`` clears any errors that occur
 when it calls the key's hash function, or while performing a lookup
-in the dictionary.
+in the dictionary
 [`Issue 51 <https://github.com/capi-workgroup/problems/issues/51>`__].
 
 **Functions Called with Error Indicator Set**
@@ -273,13 +272,6 @@ the "safe API" tier
 [`Issue 61 <https://github.com/capi-workgroup/problems/issues/61>`__].
 
 
-Missing Functionality
-=====================
-
-This section consists of a list of feature requests, i.e., functionality
-that was identified as missing in the current C API.
-
-
 Implementation Flaws
 ====================
 
@@ -339,4 +331,41 @@ and ``int32_t`` would have been better choices
 
 Some headers (like marshal.h) are not included from Python.h.
 [`Issue 43 <https://github.com/capi-workgroup/problems/issues/43>`__].
+
+
+Missing Functionality
+=====================
+
+This section consists of a list of feature requests, i.e., functionality
+that was identified as missing in the current C API.
+
+**Debug Mode**
+
+A debug mode that can be activated without recompilation and which
+activates various checks that can help detect various types of errors.
+[`Issue 36 <https://github.com/capi-workgroup/problems/issues/36>`__].
+
+**Introspection**
+
+The inspect module cannot currently reliably introspect objects
+defined in C in the same way as python objects.
+[`Issue 32 <https://github.com/capi-workgroup/problems/issues/32>`__].
+
+**Type Checking**
+
+Efficient type checking for heap types, similar to what ``Py*_Check``
+can do for a static type.
+[`Issue 17 <https://github.com/capi-workgroup/problems/issues/17>`__].
+
+**Improved Interaction with Other Languages**
+
+Interfacing with other GC based languages, and integrating their
+GC with Python's GC.
+[`Issue 19 <https://github.com/capi-workgroup/problems/issues/19>`__].
+
+Inject foreign stack frames to the traceback.
+[`Issue 18 <https://github.com/capi-workgroup/problems/issues/18>`__].
+
+Concrete strings that can be used in other languages
+[`Issue 16 <https://github.com/capi-workgroup/problems/issues/16>`__].
 
