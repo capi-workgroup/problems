@@ -4,48 +4,55 @@ Title: An Evaluation of Python's C API
 Abstract
 ========
 
-This document describes our shared view of the C API. We aim to cover its
-purposes, the different stakeholders and their particular use cases and
-requirements, and to identify the strengths and weaknesses of the C API.
-This document does not propose solutions to any of the problems it identifies.
-Instead, it is intended to be used to guide the design of such solutions,
-and to provide criteria by which to evaluate solutions that are proposed.
+This document describes our shared view of the C API. We aim to define
+its purposes, the different stakeholders and their particular use cases
+and requirements, and to identify the strengths and weaknesses of the
+C API. We do not propose solutions to any of the problems. The
+intention is that this list will be used to guide the discussions
+about such proposals, and to provide criteria by which to evaluate
+them.
 
 Introduction
 ============
 
 The original purpose of Python's C API was to embed Python into C/C++
-applications and to make it possible to write extension modules in C/C++. These
-capabilities were instrumental in the growth of Python's ecosystem.  Over the
-decades, the C API evolved to provide different tiers of stability, conventions
-changed, and new usage patterns have emerged. In addition, lessons were learned
-and mistakes in both the design and the implementation of the C API were
-identified.
+applications and to make it possible to write extension modules in C/C++.
+These capabilities were instrumental to the growth of Python's ecosystem.
+Over the decades, the C API evolved to provide different tiers of stability,
+conventions changed, and new usage patterns have emerged, such as bindings
+to other languages. In addition, lessons were learned and mistakes in both
+the design and the implementation of the C API were identified.
 
-Evolving the C API is hard due to a combination of backwards compatibility
-constraints and the inherent complexity of the C API, which is both technical
-and social. Different types of users bring different, sometimes conflicting,
-requirements. The tradeoff between stability and progress is an ongoing, highly
-contentious topic of discussion. Several proposals have been put forwards for
-improvements, redesign or replacement of the C API, representing deep
-analyses of the problems. At the 2023 Language Summit, three back-to-back
-sessions were devoted to various aspects of the C API. There is general agreement
-that a new C API design can remedy problems that the C API has accumulated over
-the last 30 years, while updating it for use cases that it was not designed for.
-However, there was a sense that we are trying to discuss solutions without
-a clear understanding of the problems that we are trying to solve. It was
-decided that we need to agree on the current problems with the C API, before
-we are able to evaluate any of the proposed solutions. This document aims to
-do just that, by summarizing the contributions that various people submitted
-to the
+Evolving the C API is hard due to the combination of backwards
+compatibility constraints and the inherent complexity of the C API,
+both technical and social. Different types of users bring different,
+sometimes conflicting, requirements. The tradeoff between stability
+and progress is an ongoing, highly contentious topic of discussion.
+Several proposals have been put forwards for improvements, redesign
+or replacement of the C API, representing deep analyses of the problems.
+At the 2023 Language Summit, three back-to-back sessions were devoted to
+different aspects of the C API. There is general agreement that a new
+C API design can remedy problems that the C API has accumulated over the
+last 30 years, while at the same time updating it for use cases that it
+was not originally designed for.
+
+However, there was a sense that we are trying to discuss solutions
+without a clear common understanding of the problems that we are
+trying to solve. It was decided that we need to agree on the current
+problems with the C API, before we are able to evaluate any of the
+proposed solutions. This document aims to do just that, by summarizing
+the contributions that various people submitted to the
 [`capi-workgroup <https://github.com/capi-workgroup/problems/issues/>`__]
 repository on GitHub in the aftermath of the language summit.
 
 Over 60 different issues were created on that repo, each describing a
 problem with the C API. They were categorized and a number of recurring
-themes were identified. The sections below correspond to these themes,
-and each contains a combined description of the issues raised in that
-category, along with links to the individual issues.
+themes were identified. The sections below mostly correspond to these
+themes, and each contains a combined description of the issues raised
+in that category, along with links to the individual issues. In
+addition, we included a section that aims to identify the different
+stakeholders of the C API, and the particular requirements that each
+of them has.
 
 API Evolution and Maintenance
 =============================
@@ -167,16 +174,16 @@ it can fetch the exception object which is stored in the error indicator.
 A number of problems were identified which are related to error handling,
 pointing at APIs which are too easy to use incorrectly.
 
-Functions that Suppress Errors
-------------------------------
+**Functions that Suppress Errors**
+
 There are functions that do not report all errors that occur while they
 execute. For example, ``PyDict_GetItem`` clears any errors that occur
 when it calls the key's hash function, or while performing a lookup
 in the dictionary.
 [`Issue 51 <https://github.com/capi-workgroup/problems/issues/51>`__].
 
-Functions Called with Error Indicator Set
------------------------------------------
+**Functions Called with Error Indicator Set**
+
 Python code never executes with an in-flight exception (by definition),
 and by the same token C API functions should never be called with the error
 indicator set. This is currently not checked in most C API functions, and
@@ -185,8 +192,8 @@ function while an exception is set. For example, see the call to
 ``PyUnicode_FromString`` in the error handler of ``_PyErr_WriteUnraisableMsg``
 [`Issue 2 <https://github.com/capi-workgroup/problems/issues/2>`__].
 
-Missing or Ambiguous Return Values
-----------------------------------
+**Missing or Ambiguous Return Values**
+
 There are functions that do not return a value, so a caller is forced to
 query the error indicator in order to identify whether an error has occurred.
 An example is ``PyBuffer_Release``
@@ -204,8 +211,8 @@ The fact that the error was not detected before the call is a bug in the
 calling code, but the behaviour of the program in this case doesn't make it
 easy to identify and debug the problem.
 
-``NULL`` as a Valid ``PyObject*`` Argument Value
-------------------------------------------------
+**``NULL`` as a Valid ``PyObject*`` Argument Value**
+
 There are functions that take a ``PyObject*`` argument, with special meaning
 when it is ``NULL``. For example, if ``PyObject_SetAttr`` receives ``NULL`` as
 the value to set, this mean that the attribute should be cleared. This is error
@@ -265,4 +272,71 @@ be able to group them into their own tiers - the "fast API" tier and
 the "safe API" tier
 [`Issue 61 <https://github.com/capi-workgroup/problems/issues/61>`__].
 
+
+Missing Functionality
+=====================
+
+This section consists of a list of feature requests, i.e., functionality
+that was identified as missing in the current C API.
+
+
+Implementation Flaws
+====================
+
+Below is a list of localized implementation flaws. Most of these can
+probably be fixed incrementally, if we choose to do so. They should,
+in any case, be avoided in any new API design.
+
+**Inconsistencies in success/failure return values**
+
+There are functions that don't follow the convention of
+returning ``0`` for success and ``-1`` for failure. For
+example, ``PyArg_ParseTuple`` return 0 for success and
+non-zero for failure.
+
+**Macros With Double Side Effects**
+
+The macros ``Py_CLEAR`` and ``Py_SETREF`` access their arg more than
+once, so if the arg is an expression with side effects, they are
+duplicated
+[`Issue 3 <https://github.com/capi-workgroup/problems/issues/3>`__].
+
+**``Py_SIZE`` (``ob_size``)**
+
+The meaning of ``Py_SIZE`` depends on the type and is not always
+reliable
+[`Issue 10 <https://github.com/capi-workgroup/problems/issues/10>`__].
+
+**Naming**
+
+``PyLong`` and ``PyUnicode`` use names which don't match the python
+types they represent (int/str). This can be fixed in a new API
+[`Issue 14 <https://github.com/capi-workgroup/problems/issues/14>`__].
+
+There are identifiers in the API which are lacking a ``Py``/``_Py``
+prefix
+[`Issue 46 <https://github.com/capi-workgroup/problems/issues/46>`__].
+
+**Inconsitencies with Python functions**
+
+The behaviour of ``PyIter_Next`` is different from ``tp_iternext``.
+[`Issue 29 <https://github.com/capi-workgroup/problems/issues/29>`__].
+The behaviour of ``PySet_Contains`` is different from ``set.__contains__``
+[`Issue 6 <https://github.com/capi-workgroup/problems/issues/6>`__].
+
+**``PyArg_ParseTupleAndKeywords`` API**
+
+The fact that ``PyArg_ParseTupleAndKeywords`` takes a non-const
+char* array as argument makes it more difficult to use.
+
+**C integer types**
+
+The code uses the C types ``long`` and ``int``, where ``stdint``
+and ``int32_t`` would have been better choices
+[`Issue 27 <https://github.com/capi-workgroup/problems/issues/27>`__].
+
+**Python.h does not expose the whole API**
+
+Some headers (like marshal.h) are not included from Python.h.
+[`Issue 43 <https://github.com/capi-workgroup/problems/issues/43>`__].
 
