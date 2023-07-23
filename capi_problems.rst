@@ -41,7 +41,7 @@ general agreement that a new design can remedy the problems that
 the C API has accumulated over the last 30 years, while at the same
 time updating it for use cases that it was not originally designed for.
 
-However, there was a also sense at the Language Summit that we are
+However, there was also a sense at the Language Summit that we are
 trying to discuss solutions without a clear common understanding
 of the problems that we are trying to solve. It was decided that
 we need to agree on the current problems with the C API, before
@@ -84,7 +84,7 @@ process for incremental API evolution. The other possible approach is that
 this is not a problem to be solved, but rather a feature of any API. In this
 view, API evolution should not be incremental, but rather through large
 redesigns, each of which learns from the mistakes of the past and is not
-shackled by backwards compatibility requirements. A realistic approach
+shackled by backwards compatibility requirements. A compromise approach
 is somewhere between these two extremes, fixing issues which are easy
 or important enough to tackle incrementally, and leaving others alone.
 
@@ -111,7 +111,7 @@ The C API does not have a formal specification, it is described
 semi-formally in the documentation and exposed through C header
 files. This creates a number of problems.
 
-Bindings for languages other than C/C++ are required to parse C code
+Bindings for languages other than C/C++ must parse C code
 [`Issue 7 <https://github.com/capi-workgroup/problems/issues/7>`__].
 Some C language features are hard to handle in this way, because
 they produce compiler-dependent output (such as enums) or require
@@ -331,7 +331,7 @@ to interact with
 
 There are API functions that take a ``PyObject*`` arg which must be
 of a more specific type (such as ``PyTuple_Size``, which fails if
-its arg is not a ``PyTuple``). It is an open question whether this
+its arg is not a ``PyTupleObject*``). It is an open question whether this
 is a good pattern to have, or whether the API should expect the
 more specific type
 [`Issue 31 <https://github.com/capi-workgroup/problems/issues/31>`__].
@@ -407,7 +407,7 @@ activates various checks that can help detect various types of errors.
 **Introspection**
 
 There aren't currently reliable introspection capabilities for objects
-defined in C in the same way as there are for python objects.
+defined in C in the same way as there are for Python objects.
 [`Issue 32 <https://github.com/capi-workgroup/problems/issues/32>`__].
 
 Efficient type checking for heap types, similar to what ``Py*_Check``
