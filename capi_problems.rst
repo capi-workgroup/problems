@@ -23,9 +23,12 @@ applications and to make it possible to write extension modules in C/C++.
 These capabilities were instrumental to the growth of Python's ecosystem.
 Over the decades, the C API evolved to provide different tiers of stability,
 conventions changed, and new usage patterns have emerged, such as bindings
-to languages other than C/C++. In addition, lessons were learned and
-mistakes in both the design and the implementation of the C API were
-identified.
+to languages other than C/C++. In addition, CPython is no longer the only
+implementation of the C API, and some of the design decisions made when
+it was, are difficult for alternative implementations to work with
+[`Issue 64 <https://github.com/capi-workgroup/problems/issues/64>`__].
+Finally, lessons were learned and mistakes in both the design and the
+implementation of the C API were identified.
 
 Evolving the C API is hard due to the combination of backwards
 compatibility constraints and its inherent complexity, both
