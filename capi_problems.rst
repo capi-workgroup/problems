@@ -271,8 +271,8 @@ existence is making it hard to make changes to some implementation
 details, because it exposes struct fields such as ``ob_refcnt``,
 ``ob_type`` and ``ob_size``. There was some discussion about whether
 the stable ABI is worth keeping. Arguments on both sides can be
-found in `Issue 4 <https://github.com/capi-workgroup/problems/issues/4>`__
-and `Issue 9 <https://github.com/capi-workgroup/problems/issues/9>`__].
+found in [`Issue 4 <https://github.com/capi-workgroup/problems/issues/4>`__]
+and [`Issue 9 <https://github.com/capi-workgroup/problems/issues/9>`__].
 
 Alternatively, it was suggested that in order to be able to evolve
 the stable ABI, we need a mechanism to support multiple versions of
@@ -303,9 +303,10 @@ what the change policy should be with respect to such API elements
 that predate PEP 689
 [`Issue 58 <https://github.com/capi-workgroup/problems/issues/58>`__].
 
-There are API functions which have a fast version and a safe version
-(like ``PyTuple_GET_ITEM`` vs ``PyTuple_GetItem``). It may help to
-be able to group them into their own tiers - the "fast API" tier and
+There are API functions which have an unsafe (but fast) version as well as
+a safe version which performs error checking (for example,
+``PyTuple_GET_ITEM`` vs ``PyTuple_GetItem``). It may help to
+be able to group them into their own tiers - the "unsafe API" tier and
 the "safe API" tier
 [`Issue 61 <https://github.com/capi-workgroup/problems/issues/61>`__].
 
