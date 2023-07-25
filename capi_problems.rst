@@ -18,10 +18,13 @@ and to provide criteria by which to evaluate them.
 Introduction
 ============
 
-The original purpose of Python's C API was to embed Python into C/C++
-applications and to make it possible to write extension modules in C/C++.
+Python's C API was not designed for the purposes it currently fulfils.
+It evolved from what was initially the internal API between the C code
+of the interpreter and the Python language and libraries. In its first
+incarnation, it was exposed to make it possible to embed Python into C/C++
+applications and to write extension modules in C/C++.
 These capabilities were instrumental to the growth of Python's ecosystem.
-Over the decades, the C API evolved to provide different tiers of stability,
+Over the decades, the C API grew to provide different tiers of stability,
 conventions changed, and new usage patterns have emerged, such as bindings
 to languages other than C/C++. In addition, CPython is no longer the only
 implementation of the C API, and some of the design decisions made when
