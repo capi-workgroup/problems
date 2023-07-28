@@ -70,7 +70,147 @@ and the particular requirements that each of them has.
 C API Stakeholders
 ==================
 
-[TODO: write this section]
+As mentioned in the introduction, the C API was originally
+created as the internal interface between CPython's
+interpreter and the Python layer. It was later exposed as
+a way for third party developers to extend and embed Python
+programs. Over the years, new types of stakeholders emerged,
+with different requirements and areas of focus. This section
+describes this complex state of affairs in terms of the
+actions that different stakeholders need to perform through
+the C API.
+
+There are actions which are generic, and required by
+all types of API users:
+
+* Define functions and call them
+* Create classes and instantiate them
+* Create instances of builtin and user defined types
+  and perform operations on them
+* Introspect objects, including types, instances, and functions.
+* Raise and handle exceptions
+* Import modules
+* Manage threads
+* Manage sub-interpreters
+* Handle and send signals
+
+Groups of users are:
+
+**Extension writers**
+
+These are the traditional users of the C API, and their requirements
+are listed above.
+
+**Embedders**
+
+Applications with an embedded Python interpreter. Example are
+`Blender <https://docs.blender.org/api/current/info_overview.html>`__ and
+`OBS <https://obsproject.com/wiki/Getting-Started-With-OBS-Scripting>`__.
+
+They need to be able to
+
+* Configure the interpreter (import paths, inittab, sys.argv, ...)
+* Interact with the execution model and program lifetime, including
+  clean interpreter shutdown and restart
+* Represent complex data models in a way Python can use without
+  having to create deep copies.
+* Frozen modules.
+* Run multiple independent interpreters (in particular, when embedded
+  in a library that wants to avoid global effects).
+
+**Alternative Python Implementations**
+
+Alternative implementations of Python (such as
+`PyPy <https://www.pypy.org>`__,
+`GraalPy <https://www.graalvm.org/python/>`__,
+`IronPython <https://ironpython.net>`__,
+`RustPython <https://github.com/RustPython/RustPython>`__,
+`MicroPython <https://micropython.org>`__,
+and `Jython <https://www.jython.org>`__), may take
+very different approaches for the implementation of
+different subsystems. They need:
+
+* The API to be abstract and hide implementation details.
+* A specification of the API, ideally with a test suite
+  that ensures compatibility.
+* It would be nice to have an ABI that can be shared
+  across Python implementations.
+
+**Alternative APIs**
+
+There are several projects that implement alternatives to the
+C API, which offer extension users advantanges over programming
+directly with the C API. These APIs are implemented with the
+C API, and in some cases by using cpython internals.
+Some examples are
+`Cython <https://cython.org>`__,
+`HPy <https://hpyproject.org>`__ and
+`pythoncapi-compat <https://pythoncapi-compat.readthedocs.io/en/latest/>`__.
+CPython's DSL for parsing function arguments, the
+`Argument Clinic <https://docs.python.org/3/howto/clinic.html>`__,
+can also be seen as belonging to this category of stakeholders.
+
+Such systems need minimal building blocks for accessing CPython
+efficiently. They don't necessarily need an ergonomic API, because
+they typically generate code that is not intended to be read
+by humans. But they do need it to be comprehensive enough so that
+they don't need to access internals, while offering them stability,
+and without sacrificing performance.
+
+An alternative is to have a fast API tier with less error checking
+and lower stability guarantees. Then the developers and users of
+these tools can choose whether to generate code that uses the
+faster or the safer and more stable version of the API.
+
+**Language bindings**
+
+Libraries that create bindings between Python and code written in
+languages other than C, such as
+`pybind11 <https://pybind11.readthedocs.io/en/stable/>`__ for C++11,
+`PyO3 <https://github.com/PyO3/pyo3>`__ for Rust,
+`PySide <https://pypi.org/project/PySide/>`__ for Qt, and
+`Pygolo <https://gitlab.com/pygolo/py>`__ for Go.
+
+They need to:
+
+* Create custom objects (e.g. function/module objects
+  and traceback entries) that match the behavior of equivalent
+  Python code as closely as possible.
+* Dynamically create objects which are static in traditional
+  C extensions (e.g. classes/modules), and need CPython to manage
+  their state and lifetime.
+* Adapt foreign objects (strings, GC'd containers), with low overhead.
+* Adapt external mechanisms, execution models and guarantees to the
+  Python way (green threads/continuations, one-writer-or-multiple-readers
+  semantics, virtual multiple inheritance, 1-based indexing, super-long
+  inheritance chains, goroutines, channels, ...)
+
+Strengths of the C API
+======================
+
+While the bulk of this document is devoted to problems with the
+C API that we would like to see fixed in any new design, it is
+also important to point out the strengths of the C API, and to
+make sure that they are preserved.
+
+As mentioned in the introduction, the C API enabled the
+development and growth of the Python ecosystem over the last
+three decades, while evolving to support use cases that it was
+not originally designed for. This track record in itself is
+indication of how effective and valuable it has been.
+
+A number of specific strengths were mentioned in the
+capi-workgroup discussions. Heap types were identified
+as much safer and easier to use than static types
+[`Issue 4 <https://github.com/capi-workgroup/problems/issues/4#issuecomment-1542324451>`__].
+
+API functions that take a C string literal for lookups based
+on a Python string are very convenient
+[`Issue 30 <https://github.com/capi-workgroup/problems/issues/30#issuecomment-1550098113>`__].
+
+The Limited API and stable ABI hide implementation details and
+make it easier to evolve Python
+[`Issue 30 <https://github.com/capi-workgroup/problems/issues/30#issuecomment-1560083258>`__].
 
 API Evolution and Maintenance
 =============================
