@@ -151,8 +151,8 @@ can also be seen as belonging to this category of stakeholders.
 
 Such systems need minimal building blocks for accessing CPython
 efficiently. They don't necessarily need an ergonomic API, because
-they typically generated code that is not intended to be read
-by humans. But they do need it to be comprehesive enough so that
+they typically generate code that is not intended to be read
+by humans. But they do need it to be comprehensive enough so that
 they don't need to access internals, while offering them stability,
 and without sacrificing performance.
 
@@ -166,8 +166,9 @@ faster or the safer and more stable version of the API.
 Libraries that create bindings between Python and code written in
 languages other than C, such as
 `pybind11 <https://pybind11.readthedocs.io/en/stable/>`__ for C++11,
-`PyO3 <https://github.com/PyO3/pyo3>`__ for Rust and
-`PySide <https://pypi.org/project/PySide/>`__ for Qt.
+`PyO3 <https://github.com/PyO3/pyo3>`__ for Rust,
+`PySide <https://pypi.org/project/PySide/>`__ for Qt, and
+`Pygolo <https://gitlab.com/pygolo/py>`__ for Go.
 
 They need to:
 
@@ -181,7 +182,7 @@ They need to:
 * Adapt external mechanisms, execution models and guarantees to the
   Python way (green threads/continuations, one-writer-or-multiple-readers
   semantics, virtual multiple inheritance, 1-based indexing, super-long
-  inheritance chains, ...)
+  inheritance chains, goroutines, channels, ...)
 
 Strengths of the C API
 ======================
