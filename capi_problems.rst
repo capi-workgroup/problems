@@ -170,7 +170,7 @@ They need to:
 * Create custom objects (e.g. function/module objects
   and traceback entries) that match the behavior of equivalent
   Python code as closely as possible.
-* Dynamically create objects which are are static in traditional
+* Dynamically create objects which are static in traditional
   C extensions (e.g. classes/modules), and need CPython to manage
   their state and lifetime.
 * Adapt foreign objects (strings, GC'd containers), with low overhead.
@@ -193,9 +193,9 @@ three decades, while evolving to support use cases that it was
 not originally designed for. This track record in itself is
 indication of how effective and valuable it has been.
 
-A number of apecific strengths were mentioned in the
+A number of specific strengths were mentioned in the
 capi-workgroup discussions. Heap types were identified
-as much safer and easy to use than static types
+as much safer and easier to use than static types
 [`Issue 4 <https://github.com/capi-workgroup/problems/issues/4#issuecomment-1542324451>`__].
 
 API functions that take a C string literal for lookups based
