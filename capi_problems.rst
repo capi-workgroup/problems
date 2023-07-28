@@ -120,7 +120,7 @@ They need to be able to
 
 **Alternative Python Implementations**
 
-Alterantive implementations of Python (such as
+Alternative implementations of Python (such as
 `PyPy <https://www.pypy.org>`__,
 `GraalPython <https://www.graalvm.org/python/>`__,
 and `Jython <https://www.jython.org>`__), may take
