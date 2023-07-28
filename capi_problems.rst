@@ -123,6 +123,8 @@ They need to be able to
 Alternative implementations of Python (such as
 `PyPy <https://www.pypy.org>`__,
 `GraalPython <https://www.graalvm.org/python/>`__,
+`IronPython <https://ironpython.net>`__,
+`RustPython <https://github.com/RustPython/RustPython>`__,
 and `Jython <https://www.jython.org>`__), may take
 very different approaches for the implementation of
 different subsystems. They need:
@@ -130,7 +132,8 @@ different subsystems. They need:
 * The API to be abstract and hide implementation details.
 * A specification of the API, ideally with a test suite
   that ensures compatibility.
-* An ABI that can be shared across Python implementations.
+* It would be nice to have an ABI that can be shared
+  across Python implementations.
 
 **Alternative APIs**
 
@@ -140,10 +143,11 @@ directly with the C API. These APIs are implemented with the
 C API, and in some cases by using cpython internals.
 Some examples are
 `Cython <https://cython.org>`__,
-`HPy <https://hpyproject.org>`__,
-`pythoncapi-compat <https://pythoncapi-compat.readthedocs.io/en/latest/>`__
-and CPython's own
-`Argument Clinic <https://docs.python.org/3/howto/clinic.html>`__.
+`HPy <https://hpyproject.org>`__ and
+`pythoncapi-compat <https://pythoncapi-compat.readthedocs.io/en/latest/>`__.
+CPython's DSL for parsing function arguments, the
+`Argument Clinic <https://docs.python.org/3/howto/clinic.html>`__,
+can also be seen as belonging to this category of stakeholders.
 
 Such systems need minimal building blocks for accessing CPython
 efficiently. They don't necessarily need an ergonomic API, because
@@ -152,10 +156,10 @@ by humans. But they do need it to be comprehesive enough so that
 they don't need to access internals, while offering them stability,
 and without sacrificing performance.
 
-An alternative is to have a fast API tier with lower stability
-guarantees. Then the users of these tools can choose whether
-to generate code that uses the faster or the more stable version
-of the API.
+An alternative is to have a fast API tier with less error checking
+and lower stability guarantees. Then the developers and users of
+these tools can choose whether to generate code that uses the
+faster or the safer and more stable version of the API.
 
 **Language bindings**
 
