@@ -122,9 +122,10 @@ They need to be able to
 
 Alternative implementations of Python (such as
 `PyPy <https://www.pypy.org>`__,
-`GraalPython <https://www.graalvm.org/python/>`__,
+`GraalPy <https://www.graalvm.org/python/>`__,
 `IronPython <https://ironpython.net>`__,
 `RustPython <https://github.com/RustPython/RustPython>`__,
+`MicroPython <https://micropython.org>`__,
 and `Jython <https://www.jython.org>`__), may take
 very different approaches for the implementation of
 different subsystems. They need:
