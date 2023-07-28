@@ -163,7 +163,7 @@ Libraries that create bindings between Python and code written in
 languages other than C, such as
 `pybind11 <https://pybind11.readthedocs.io/en/stable/>`__ for C++11,
 `PyO3 <https://github.com/PyO3/pyo3>`__ for Rust and
-`PySize <https://pypi.org/project/PySide/>`__ for Qt.
+`PySide <https://pypi.org/project/PySide/>`__ for Qt.
 
 They need to:
 
