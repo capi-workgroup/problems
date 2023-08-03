@@ -165,7 +165,7 @@ faster or the safer and more stable version of the API.
 **Binding generators**
 
 Libraries that create bindings between Python and other object models,
-paradigms or languages other than C, such as
+paradigms or languages, such as
 `pybind11 <https://pybind11.readthedocs.io/en/stable/>`__ for C++11,
 `PyO3 <https://github.com/PyO3/pyo3>`__ for Rust,
 `PySide <https://pypi.org/project/PySide/>`__ for Qt,
