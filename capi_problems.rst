@@ -162,14 +162,17 @@ and lower stability guarantees. Then the developers and users of
 these tools can choose whether to generate code that uses the
 faster or the safer and more stable version of the API.
 
-**Language bindings**
+**Binding generators**
 
-Libraries that create bindings between Python and code written in
-languages other than C, such as
+Libraries that create bindings between Python and other object models,
+paradigms or languages, such as
 `pybind11 <https://pybind11.readthedocs.io/en/stable/>`__ for C++11,
 `PyO3 <https://github.com/PyO3/pyo3>`__ for Rust,
-`PySide <https://pypi.org/project/PySide/>`__ for Qt, and
-`Pygolo <https://gitlab.com/pygolo/py>`__ for Go.
+`PySide <https://pypi.org/project/PySide/>`__ for Qt,
+`PyGObject <https://pygobject.readthedocs.io/en/latest/>`__ for GTK,
+`Pygolo <https://gitlab.com/pygolo/py>`__ for Go,
+`PyJNIus <https://github.com/kivy/pyjnius/>`__ for Java, or
+`SWIG <https://swig.org/>`__ for C/C++.
 
 They need to:
 
