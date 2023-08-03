@@ -103,7 +103,7 @@ are listed above.
 
 **Embedders**
 
-Applications with an embedded Python interpreter. Example are
+Applications with an embedded Python interpreter. Examples are
 `Blender <https://docs.blender.org/api/current/info_overview.html>`__ and
 `OBS <https://obsproject.com/wiki/Getting-Started-With-OBS-Scripting>`__.
 
@@ -114,7 +114,7 @@ They need to be able to
   clean interpreter shutdown and restart
 * Represent complex data models in a way Python can use without
   having to create deep copies.
-* Frozen modules.
+* Provide and import frozen modules.
 * Run multiple independent interpreters (in particular, when embedded
   in a library that wants to avoid global effects).
 
@@ -398,7 +398,7 @@ problem.
 
 There are functions that take a ``PyObject*`` argument, with special meaning
 when it is ``NULL``. For example, if ``PyObject_SetAttr`` receives ``NULL`` as
-the value to set, this mean that the attribute should be cleared. This is error
+the value to set, this means that the attribute should be cleared. This is error
 prone because it could be that ``NULL`` indicates an error in the construction
 of the value, and the program failed to check for this error. The program will
 misinterpret the ``NULL`` to mean something different than error
@@ -483,7 +483,7 @@ is a good pattern to have, or whether the API should expect the
 more specific type
 [`Issue 31 <https://github.com/capi-workgroup/problems/issues/31>`__].
 
-There are functions in the API that take concrete types, such
+There are functions in the API that take concrete types, such as
 ``PyDict_GetItemString`` which performs a dictionary lookup for a key
 specified as a c string rather than ``PyObject*``. At the same time,
 for ``PyDict_ContainsString`` it is not considered appropriate to
