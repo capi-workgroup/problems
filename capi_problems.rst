@@ -131,7 +131,7 @@ was spent on dealing with reference counting, most specifically on
 keeping the reference counting contract, which is only exposed in C API,
 while making it scale with parallel execution.
 
-For more details see the Discuss
+For another example, see the Discuss
 `thread <https://discuss.python.org/t/lets-get-rid-of-the-stable-abi-but-keep-the-limited-api/18458>`__:
 Let’s get rid of the stable ABI, but keep the limited API.
 
