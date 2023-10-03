@@ -137,7 +137,7 @@ Let’s get rid of the stable ABI, but keep the limited API.
 
 Because the CPython code is by definition intended to run only on given
 version of CPython and is always recompiled, the following requirements
-*do not apply* to CPython developers:
+*do not apply* to the C API usage in CPython core codebase:
 
 * Compatibility with alternative Python implementations
 * API/ABI stability
@@ -146,8 +146,9 @@ Note: this section is concerned with CPython core, not the standard library.
 
 **Extension writers**
 
-Different users have different motivations for developing. Depending on
-the motivations some of the expectations and requirements are different.
+Different users have different motivations for developing an extension.
+Depending on the motivations some of the expectations and requirements
+are different.
 
 *Performance of Python code*
 
