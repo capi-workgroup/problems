@@ -80,6 +80,11 @@ describes this complex state of affairs in terms of the
 actions that different stakeholders need to perform through
 the C API.
 
+There are two main groups of the users of the C API:
+
+* External users. They only consume the API.
+* CPython developers. They define, implement, and consume the API inside the CPython code.
+
 There are actions which are generic, and required by
 all types of API users:
 
@@ -94,12 +99,99 @@ all types of API users:
 * Manage sub-interpreters
 * Handle and send signals
 
+External users often support multiple Python versions
+or Python implementations. For them, these are the common
+requirements:
+
+* Specification/documentation of the API and ABI
+* Backwards/forwards compatibility and stability for:
+    * API (code works as-is but requires recompilation)
+    * ABI (compiled binaries work)
+    * Across CPython versions
+    * Across Python implementations
+
+Note: in practice, there will be tradeoffs between some of the requirements,
+for example, stability vs. performance.
+
 Groups of users are:
+
+**CPython developers**
+
+CPython developers change the CPython internals to implement new
+functionality or improve/optimize the current functionality. While ideally,
+they would be free to alter any internal details, in practice, anything that
+is intentionally (or even unintentionally) exposed to external C API users
+should remain compatible (depending on the concrete policy for the
+specific API). If it is part of the Stable ABI, it must remain binary
+compatible.
+
+One recent notable example is that a significant amount of work on the
+Gilectomy project and the `PEP 703 <https://peps.python.org/pep-0703/>`__
+was spent on dealing with reference counting, most specifically on
+keeping the reference counting contract, which is only exposed in C API,
+while making it scale with parallel execution.
+
+For more details see the Discuss
+`thread <https://discuss.python.org/t/lets-get-rid-of-the-stable-abi-but-keep-the-limited-api/18458>`__:
+Let’s get rid of the stable ABI, but keep the limited API.
+
+Because the CPython code is by definition intended to run only on given
+version of CPython and is always recompiled, the following requirements
+*do not apply* to CPython developers:
+
+* Compatibility with alternative Python implementations
+* API/ABI stability
+
+Note: this section is concerned with CPython core, not the standard library.
 
 **Extension writers**
 
-These are the traditional users of the C API, and their requirements
-are listed above.
+Different users have different motivations for developing. Depending on
+the motivations some of the expectations and requirements are different.
+
+*Performance of Python code*
+
+Functionality that can be implemented in idiomatic Python code is instead
+implemented as an extension (or existing Python code is rewritten).
+
+Such code performs many Python-specific operations, such as accessing
+attributes, and usually defines multiple Python classes and other complex
+Python specific structures.
+
+Because the users actually do not desire to use C, but only want
+the performance of C, these extensions are often implemented through
+alternative APIs, most notably through `Cython`, which allows writing
+code "like Python".
+
+Another example includes packages such as NumPy or Pandas, where part of the
+package falls into this category (NumPy's dtypes and the complex logic
+around them) and other parts fall into the following category.
+
+Requirements: access to many Python specifics (e.g., defining a metaclass)
+at the best performance.
+
+*Performance of numerical computations*
+
+Code that is intended to provide the best possible performance through low level
+techniques not available in Python or through external libraries, such as
+TensorFlow.
+
+Such code needs to retrieve raw data from Python, then perform the computation,
+and then transfer the results back to Python.
+
+Requirements: fast bulk read and write access to raw data encapsulated
+in some Python structures.
+
+*Binding for native libraries*
+
+Extensions that provide Python interface to native libraries that provide
+functionality not available in Python. Example: psutils.
+
+Requirements: ability to expose native functions to Python. While most of
+such extensions define Python classes and other Python specific constructs,
+it is not a strict requirement. The Python "layer" around the native
+functions can be implemented in Python code.
+
 
 **Embedders**
 
