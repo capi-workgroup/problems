@@ -80,11 +80,6 @@ describes this complex state of affairs in terms of the
 actions that different stakeholders need to perform through
 the C API.
 
-There are two main groups of the users of the C API:
-
-* External users. They only consume the API.
-* CPython developers. They define, implement, and consume the API inside the CPython code.
-
 There are actions which are generic, and required by
 all types of API users:
 
@@ -99,7 +94,7 @@ all types of API users:
 * Manage sub-interpreters
 * Handle and send signals
 
-External users often support multiple Python versions
+Third party developers often support multiple Python versions
 or Python implementations. For them, these are the common
 requirements:
 
@@ -110,39 +105,47 @@ requirements:
     * Across CPython versions
     * Across Python implementations
 
-Note: in practice, there will be tradeoffs between some of the requirements,
-for example, stability vs. performance.
+Note: in practice, there will be trade-offs between some of the
+requirements, for example, stability vs. performance.
 
 Groups of users are:
 
 **CPython developers**
 
-CPython developers change the CPython internals to implement new
-functionality or improve/optimize the current functionality. While ideally,
-they would be free to alter any internal details, in practice, anything that
-is intentionally (or even unintentionally) exposed to external C API users
-should remain compatible (depending on the concrete policy for the
-specific API). If it is part of the Stable ABI, it must remain binary
-compatible.
+CPython developers are both users of the C API as well as stewards
+of the Python ecosystem as a whole, which the public C API is
+an inseparable part of.
+
+If we consider only CPython core code-base development, then CPython
+developers change the CPython internals to implement new functionality
+or improve/optimize the current functionality. While doing so, they
+are:
+
+*Users of the C API*: within CPython code-base one can access any
+internal APIs or data-structures directly. However, projects of the
+size of CPython need internal abstractions to manage complexity and
+historically this was the initial purpose of the C API, which later
+became public C API for third party developers.
+
+*Stewards of the C API*: because parts of the C API are public and
+provide stability guarantees (including binary compatibility), CPython
+developers must not break its contract. This includes, for example,
+maintaining memory layout of exposed data-structures, which, however,
+often hinders their optimizations.
 
 One recent notable example is that a significant amount of work on the
 Gilectomy project and the `PEP 703 <https://peps.python.org/pep-0703/>`__
-was spent on dealing with reference counting, most specifically on
-keeping the reference counting contract, which is only exposed in C API,
-while making it scale with parallel execution.
+was spent on making reference counting scale well with parallel execution.
+The reference counting contract had to be kept, because it is exposed
+in the C API. Additionally, the details of how reference count is decremented
+or incremented had to be changed, and because that is also exposed
+contract of the C API (i.e., `Py_INCREF` is a macro) the PEP 703 breaks
+the stable ABI.
 
 For another example, see the Discuss
 `thread <https://discuss.python.org/t/lets-get-rid-of-the-stable-abi-but-keep-the-limited-api/18458>`__:
-Let’s get rid of the stable ABI, but keep the limited API.
+Let's get rid of the stable ABI, but keep the limited API.
 
-Because the CPython code is by definition intended to run only on given
-version of CPython and is always recompiled, the following requirements
-*do not apply* to the C API usage in CPython core codebase:
-
-* Compatibility with alternative Python implementations
-* API/ABI stability
-
-Note: this section is concerned with CPython core, not the standard library.
 
 **Extension writers**
 
@@ -157,13 +160,10 @@ implemented as an extension (or existing Python code is rewritten).
 
 Such code performs many Python-specific operations, such as accessing
 attributes, and usually defines multiple Python classes and other complex
-Python specific structures.
-
-Because the users actually do not desire to use C, but only want
-the performance of C, these extensions are often implemented through
-alternative APIs, most notably through `Cython`, which allows writing
-code "like Python".
-
+Python specific structures. Because the users actually do not desire to
+use C, but only want the performance of C, these extensions are often
+implemented through alternative APIs, most notably through `Cython`,
+which allows writing code "like Python".
 Another example includes packages such as NumPy or Pandas, where part of the
 package falls into this category (NumPy's dtypes and the complex logic
 around them) and other parts fall into the following category.
@@ -175,10 +175,8 @@ at the best performance.
 
 Code that is intended to provide the best possible performance through low level
 techniques not available in Python or through external libraries, such as
-TensorFlow.
-
-Such code needs to retrieve raw data from Python, then perform the computation,
-and then transfer the results back to Python.
+TensorFlow. Such code needs to retrieve raw data from Python, then perform
+the computation, and then transfer the results back to Python.
 
 Requirements: fast bulk read and write access to raw data encapsulated
 in some Python structures.
@@ -186,7 +184,7 @@ in some Python structures.
 *Binding for native libraries*
 
 Extensions that provide Python interface to native libraries that provide
-functionality not available in Python. Example: psutils.
+functionality not available in Python. Example: `psutil <https://pypi.org/project/psutil/>`__.
 
 Requirements: ability to expose native functions to Python. While most of
 such extensions define Python classes and other Python specific constructs,
