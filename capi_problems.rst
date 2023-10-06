@@ -7,7 +7,8 @@ An Evaluation of Python's C API
 Abstract
 ========
 
-This document describes our shared view of the C API, with an emphasis
+This document describes our shared view of the public C API
+intended to be consumed by external parties, with an emphasis
 on identifying problems. We aim to define its purposes, the different
 stakeholders and their particular use cases and requirements, and to
 outline the strengths and weaknesses of the C API. We do not propose
