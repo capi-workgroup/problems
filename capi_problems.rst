@@ -230,7 +230,7 @@ make it easier to evolve Python
 C API problems
 ==============
 
-This document summarizes and categorizes the problems that were reported on
+The remainder of this document summarizes and categorizes the problems that were reported on
 the [`capi-workgroup <https://github.com/capi-workgroup/problems/issues/>`__] repository. The issues are grouped into nine categories:
 
 - API Evolution and Maintenance
