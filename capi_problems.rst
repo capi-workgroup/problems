@@ -10,7 +10,7 @@ Abstract
 This **informational** document describes our shared view of the public C API.
 The document defines:
 
-* puposes of the C API
+* purposes of the C API
 * stakeholders and their particular use cases and requirements
 * strengths of the C API
 * problems of the C API categorized into nine areas of weakness
