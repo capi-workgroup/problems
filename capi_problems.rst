@@ -1,19 +1,23 @@
 
-===============================
-An Evaluation of Python's C API
-===============================
+======================================
+An Evaluation of Python's Public C API
+======================================
 
 
 Abstract
 ========
 
-This document describes our shared view of the public C API, with an emphasis
-on identifying problems. We aim to define its purposes, the different
-stakeholders and their particular use cases and requirements, and to
-outline the strengths and weaknesses of the C API. We do not propose
-solutions to any of the problems. The intention is that this list of
-issues will be used to guide the discussions about such proposals,
-and to provide criteria by which to evaluate them.
+This **informational** document describes our shared view of the public C API.
+The document defines:
+
+* purposes of the C API
+* stakeholders and their particular use cases and requirements
+* strengths of the C API
+* problems of the C API categorized into nine areas of weakness
+
+This document **does not propose solutions** to any of the identified problems.
+By creating a shared list of C API issues, this document will help to guide
+continuing discussion about change proposals and to identify evaluation criteria.
 
 Introduction
 ============
@@ -80,6 +84,9 @@ describes this complex state of affairs in terms of the
 actions that different stakeholders need to perform through
 the C API.
 
+Universal Actions for All Stakeholders
+--------------------------------------
+
 There are actions which are generic, and required by
 all types of API users:
 
@@ -94,20 +101,22 @@ all types of API users:
 * Manage sub-interpreters
 * Handle and send signals
 
-Groups of users are:
+The following sections look at the unique requirements of various stakeholders.
 
-**Extension writers**
+Extension writers
+-----------------
 
-These are the traditional users of the C API, and their requirements
-are listed above.
+Extension writers are the traditional users of the C API. Their requirements
+are the universal actions listed above.
 
-**Embedders**
+Authors of Embedded Python Applications
+---------------------------------------
 
 Applications with an embedded Python interpreter. Examples are
 `Blender <https://docs.blender.org/api/current/info_overview.html>`__ and
 `OBS <https://obsproject.com/wiki/Getting-Started-With-OBS-Scripting>`__.
 
-They need to be able to
+They need to be able to:
 
 * Configure the interpreter (import paths, inittab, sys.argv, ...)
 * Interact with the execution model and program lifetime, including
@@ -118,7 +127,8 @@ They need to be able to
 * Run multiple independent interpreters (in particular, when embedded
   in a library that wants to avoid global effects).
 
-**Alternative Python Implementations**
+Alternative Python Implementations
+----------------------------------
 
 Alternative implementations of Python (such as
 `PyPy <https://www.pypy.org>`__,
@@ -136,7 +146,8 @@ different subsystems. They need:
 * It would be nice to have an ABI that can be shared
   across Python implementations.
 
-**Alternative APIs**
+Alternative APIs
+----------------
 
 There are several projects that implement alternatives to the
 C API, which offer extension users advantanges over programming
@@ -162,7 +173,8 @@ and lower stability guarantees. Then the developers and users of
 these tools can choose whether to generate code that uses the
 faster or the safer and more stable version of the API.
 
-**Binding generators**
+Binding generators
+------------------
 
 Libraries that create bindings between Python and other object models,
 paradigms or languages, such as
@@ -215,8 +227,25 @@ The Limited API and stable ABI hide implementation details and
 make it easier to evolve Python
 [`Issue 30 <https://github.com/capi-workgroup/problems/issues/30#issuecomment-1560083258>`__].
 
+C API problems
+==============
+
+The remainder of this document summarizes and categorizes the problems that were reported on
+the [`capi-workgroup <https://github.com/capi-workgroup/problems/issues/>`__] repository. The issues are grouped into nine categories:
+
+- API Evolution and Maintenance
+- API Specification and Abstraction
+- Object Reference Management
+- Type Definition and Object Creation
+- Error Handling
+- API Tiers and Stability Guarantees
+- Use of the C Language
+- Implementation Flaws
+- Missing Functionality
+
+
 API Evolution and Maintenance
-=============================
+-----------------------------
 
 The difficulty of making changes in the C API is central to this report. It is
 implicit in many of the issues we discuss here, particularly when we need to
@@ -254,7 +283,7 @@ or a new API tier of "blessed" functions
 
 
 API Specification and Abstraction
-=================================
+---------------------------------
 
 The C API does not have a formal specification, it is described
 semi-formally in the documentation and exposed through C header
@@ -302,7 +331,7 @@ different memory management schemes
 [`Issue 33 <https://github.com/capi-workgroup/problems/issues/33>`__].
 
 Object Reference Management
-===========================
+---------------------------
 
 There are C API functions that return borrowed references, and
 functions that steal references to arguments, but there isn't a
@@ -333,7 +362,7 @@ calls
 [`Issue 15 <https://github.com/capi-workgroup/problems/issues/15>`__].
 
 Type Definition and Object Creation
-===================================
+-----------------------------------
 
 The C API has functions that make it possible to create incomplete
 or inconsistent Python objects, such as ``PyTuple_New`` and
@@ -358,7 +387,7 @@ initializing and clearing different fields of the type object
 [`Issue 49 <https://github.com/capi-workgroup/problems/issues/49>`__].
 
 Error Handling
-==============
+--------------
 
 Error handling in the C API is based on the error indicator which is stored
 on the thread state (in global scope). The design intention was that each
@@ -409,7 +438,7 @@ misinterpret the ``NULL`` to mean something different than error
 
 
 API Tiers and Stability Guarantees
-==================================
+----------------------------------
 
 The different API tiers provide different tradeoffs of stability vs
 API evolution, and sometimes performance.
@@ -459,8 +488,8 @@ be able to group them into their own tiers - the "unsafe API" tier and
 the "safe API" tier
 [`Issue 61 <https://github.com/capi-workgroup/problems/issues/61>`__].
 
-The C Language
-==============
+Use of the C Language
+---------------------
 
 A number of issues were raised with respect to the way that CPython
 uses the C language. First there is the issue of which C dialect
@@ -495,7 +524,7 @@ be documented in the guidelines
 [`Issue 23 <https://github.com/capi-workgroup/problems/issues/23>`__].
 
 Implementation Flaws
-====================
+--------------------
 
 Below is a list of localized implementation flaws. Most of these can
 probably be fixed incrementally, if we choose to do so. They should,
@@ -543,18 +572,20 @@ are not included from Python.h.
 
 
 Missing Functionality
-=====================
+---------------------
 
 This section consists of a list of feature requests, i.e., functionality
 that was identified as missing in the current C API.
 
-**Debug Mode**
+Debug Mode
+~~~~~~~~~~
 
 A debug mode that can be activated without recompilation and which
 activates various checks that can help detect various types of errors.
 [`Issue 36 <https://github.com/capi-workgroup/problems/issues/36>`__].
 
-**Introspection**
+Introspection
+~~~~~~~~~~~~~
 
 There aren't currently reliable introspection capabilities for objects
 defined in C in the same way as there are for Python objects.
@@ -564,7 +595,8 @@ Efficient type checking for heap types, similar to what ``Py*_Check``
 can do for a static type.
 [`Issue 17 <https://github.com/capi-workgroup/problems/issues/17>`__].
 
-**Improved Interaction with Other Languages**
+Improved Interaction with Other Languages
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Interfacing with other GC based languages, and integrating their
 GC with Python's GC.
@@ -575,4 +607,3 @@ Inject foreign stack frames to the traceback.
 
 Concrete strings that can be used in other languages
 [`Issue 16 <https://github.com/capi-workgroup/problems/issues/16>`__].
-
