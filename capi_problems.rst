@@ -47,8 +47,7 @@ Over the decades, the C API grew to provide different tiers of stability,
 conventions changed, and new usage patterns have emerged, such as bindings
 to languages other than C/C++. In addition, CPython is no longer the only
 implementation of the C API. Some of the design decisions made when CPython
-was the only implementation make it difficult for alternative implementations
-to work with
+was the only implementation do not serve alternative implementations well
 [`Issue 64 <https://github.com/capi-workgroup/problems/issues/64>`__].
 Finally, lessons were learned and mistakes in both the design and the
 implementation of the C API were identified.
@@ -255,7 +254,7 @@ C API problems
 The remainder of this document summarizes and categorizes the problems that were reported on
 the [`capi-workgroup <https://github.com/capi-workgroup/problems/issues/>`__] repository. The issues are grouped into nine categories:
 
-- API Evolution and Maintenance Process
+- A process for API Evolution and Maintenance
 - API Specification and Abstraction
 - Object Reference Management
 - Type Definition and Object Creation
@@ -266,8 +265,8 @@ the [`capi-workgroup <https://github.com/capi-workgroup/problems/issues/>`__] re
 - Missing Functionality
 
 
-API Evolution and Maintenance Process
--------------------------------------
+A process for API Evolution and Maintenance
+---------------------------------------------
 
 The difficulty of making changes in the C API is central to this report. It is
 implicit in many of the issues we discuss here, particularly when we need to
