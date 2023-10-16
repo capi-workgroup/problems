@@ -22,20 +22,37 @@ continuing discussion about change proposals and to identify evaluation criteria
 Introduction
 ============
 
-Python's C API was not designed for the purposes it currently fulfils.
-It evolved from what was initially the internal API between the C code
-of the interpreter and the Python language and libraries. In its first
-incarnation, it was exposed to make it possible to embed Python into C/C++
-applications and to write extension modules in C/C++.
-These capabilities were instrumental to the growth of Python's ecosystem.
+Python's C API was not originally designed for many of the
+purposes it currently fulfils. It has evolved over the
+years to support a wide range of use cases, and has
+accumulated a number of problems in the process. This
+document aims to identify these problems, and to provide a
+common understanding of the issues that we face in any redesign of the C API.
+
+*Initial Purpose as an Internal API*
+
+The C API's initial purpose was to serve as the internal API between the C code
+of the interpreter and the Python language and libraries. Over time, the C API
+evolved to serve the needs of the growing Python ecosystem.
+
+*Public Exposure of the C API*
+
+The C API was exposed as an external, public API to make it possible to embed
+Python code into C/C++ applications and to write extension modules for Python in C/C++.
+These capabilities offered greater flexibility and uses for Python's ecosystem.
+
+*Stability Tiers and Usage Evolution*
+
 Over the decades, the C API grew to provide different tiers of stability,
 conventions changed, and new usage patterns have emerged, such as bindings
 to languages other than C/C++. In addition, CPython is no longer the only
-implementation of the C API, and some of the design decisions made when
-it was, are difficult for alternative implementations to work with
+implementation of the C API. Some of the design decisions made when CPython
+was the only implementation do not serve alternative implementations well
 [`Issue 64 <https://github.com/capi-workgroup/problems/issues/64>`__].
 Finally, lessons were learned and mistakes in both the design and the
 implementation of the C API were identified.
+
+*Future Evolution of Today's C API*
 
 Evolving the C API is hard due to the combination of backwards
 compatibility constraints and its inherent complexity, both
@@ -45,7 +62,11 @@ and progress is an ongoing, highly contentious topic of discussion
 when suggestions are made for incremental improvements.
 Several proposals have been put forward for improvement, redesign
 or replacement of the C API, each representing a deep analysis of
-the problems.  At the 2023 Language Summit, three back-to-back
+the problems.
+
+*Motivation for this Document*
+
+At the 2023 Language Summit, three back-to-back
 sessions were devoted to different aspects of the C API. There is
 general agreement that a new design can remedy the problems that
 the C API has accumulated over the last 30 years, while at the same
@@ -233,7 +254,7 @@ C API problems
 The remainder of this document summarizes and categorizes the problems that were reported on
 the [`capi-workgroup <https://github.com/capi-workgroup/problems/issues/>`__] repository. The issues are grouped into nine categories:
 
-- API Evolution and Maintenance
+- A process for API Evolution and Maintenance
 - API Specification and Abstraction
 - Object Reference Management
 - Type Definition and Object Creation
@@ -244,8 +265,8 @@ the [`capi-workgroup <https://github.com/capi-workgroup/problems/issues/>`__] re
 - Missing Functionality
 
 
-API Evolution and Maintenance
------------------------------
+A process for API Evolution and Maintenance
+---------------------------------------------
 
 The difficulty of making changes in the C API is central to this report. It is
 implicit in many of the issues we discuss here, particularly when we need to
@@ -282,11 +303,11 @@ or a new API tier of "blessed" functions
 [`Issue 55 <https://github.com/capi-workgroup/problems/issues/55>`__].
 
 
-API Specification and Abstraction
----------------------------------
+API Specification and Implementation Abstraction
+------------------------------------------------
 
-The C API does not have a formal specification, it is described
-semi-formally in the documentation and exposed through C header
+The C API does not have a formal specification. Presently, it is described
+semi-formally in the documentation and exposed through the C header
 files. This creates a number of problems.
 
 Bindings for languages other than C/C++ must parse C code
